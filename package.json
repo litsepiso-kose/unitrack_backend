@@ -1,0 +1,41 @@
+{
+  "name": "globetalk-back",
+  "version": "0.0.1",
+  "description": "A Multi-lingual Video Conferencing Platform with Real-time Translation",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "compile": "tsc --watch",
+    "build": "tsc -p tsconfig.json",
+    "start": "nodemon --env-file=.env.development dist/index.js",
+    "test": "jest"
+  },
+  "author": "Kapena Peter",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^22.7.4",
+    "class-validator": "^0.14.1",
+    "dotenv-flow": "^4.1.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.2"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.11.0",
+    "@typegoose/typegoose": "^12.8.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.0",
+    "nodemon": "^3.1.7",
+    "socket.io": "^4.8.0",
+    "type-graphql": "^2.0.0-rc.2",
+    "wrtc": "^0.4.7"
+  }
+}
