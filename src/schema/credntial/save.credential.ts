@@ -2,7 +2,7 @@ import { InputType, Field } from "type-graphql";
 
 @InputType()
 export class CredentialInput {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   userId: String;
   @Field(() => String)
   name: String;
