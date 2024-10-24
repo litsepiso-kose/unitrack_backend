@@ -5,7 +5,6 @@ import {
   queryMethod,
   index,
 } from "@typegoose/typegoose";
-import { Field } from "type-graphql";
 import bcrypt from "bcrypt";
 import { AsQueryMethod, ReturnModelType } from "@typegoose/typegoose/lib/types";
 import base_model from "./base_model.js";
@@ -29,7 +28,7 @@ function find_by_username(
 ) {
   return this.findOne({ username });
 }
-export interface UserClassQueryHelpers {
+interface UserClassQueryHelpers {
   find_by_email: AsQueryMethod<typeof find_by_email>;
   find_by_username: AsQueryMethod<typeof find_by_username>;
 }
@@ -63,7 +62,6 @@ export default class UserClass extends base_model {
   password!: String;
 
   @prop({ type: [String], default: [], required: false })
-  @Field(() => [String])
   roles: String[];
 
   @prop({ required: true, unique: true })
@@ -71,7 +69,7 @@ export default class UserClass extends base_model {
 
   @prop({ type: String, unique: false, required: false })
   resetPasswordToken?: String;
-  
+
   @prop({ type: String, unique: false, required: false })
   resetPasswordExpires?: Date;
 

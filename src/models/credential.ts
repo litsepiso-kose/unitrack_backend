@@ -26,7 +26,7 @@ export default class CredentialClass extends base_model {
     dob: String;
 
     @prop({ type: String, required: true })
-    idNumber: String;
+    idNumberOrPassport: String;
 
     @prop({ type: String, required: true })
     nationality: String;
@@ -35,7 +35,7 @@ export default class CredentialClass extends base_model {
     gender: String;
 
     @prop({ type: String, required: true })
-    home_language: String;
+    homeLanguage: String;
 
     @prop({ type: String, required: true })
     resAddress: String;
@@ -44,10 +44,43 @@ export default class CredentialClass extends base_model {
     postAddress: String;
 
     @prop({ type: String, required: true })
+    emailAddress: String;
+
+    @prop({ type: String, required: true })
     phoneNumber: String;
 
     @prop({ type: String, required: true })
     parentOrGuardian: String;
+
+    @prop({ type: String, required: true })
+    parentOrGuardianPhoneNumber: String;
+
+    @prop({ type: String, required: true })
+    parentOrGuardianEmail: String;
+
+    @prop({ type: String, required: true })
+    parentOrGuardianOccupation: String;
+
+    @prop({ type: String, required: true })
+    parentOrGuardianWorkPhoneNumber: String;
+
+    @prop({ type: String, required: true })
+    parentOrGuardianWorkAddress: String;
+
+    @prop({ type: String, required: true })
+    parentOrGuardianHouseholdIncome: String;
+
+    @prop({ type: String, required: true })
+    schoolName: String;
+
+    @prop({ type: String, required: true })
+    examinationBoard: String;
+
+    @prop({ type: String, required: true })
+    grade12Results: String;
+
+    @prop({ type: String, required: true })
+    grade11Results: String;
 }
 
 export const CredentialModel = getModelForClass<
