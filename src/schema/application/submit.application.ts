@@ -20,6 +20,9 @@ export class ApplicationInput {
 
 @ObjectType()
 export class ApplicationOutput {
+    @Field(() => String)
+    id: String;
+
     @Field(() => String, { nullable: true })
     name?: String;
 

@@ -56,6 +56,7 @@ export default class ApplicationService {
                 type: input.type,
                 succeeded: true,
                 messages: ["Application saved successfully"],
+                id: savedApplication.id
             };
 
             return output;
@@ -65,8 +66,61 @@ export default class ApplicationService {
             return {
                 succeeded: false,
                 messages: [`Failed to submit application: ${error.message}`],
+                id: null
             };
         }
     }
 
+    async getApplications(userId: string, type: Number): Promise<ApplicationOutput[]> {
+        try {
+            // Find applications that match the userId and type
+            const applications = await ApplicationModel.find({ userId: userId, type: type });
+
+            // Iterate over applications and fetch additional details from University or Bursary
+            const output = await Promise.all(applications.map(async (app) => {
+                let fullName = "";
+                let description = "";
+                let url = "";
+
+                if (type === 0) { // Bursary type
+                    const bursary = await BursaryModel.findOne({ applicationId: app._id }).exec();
+                    if (bursary) {
+                        fullName = bursary.name as string;
+                        description = bursary.description as string;
+                        url = bursary.url as string;
+                    }
+                } else if (type === 1) { // University type
+                    const university = await UniversityModel.findOne({ applicationId: app._id }).exec();
+                    if (university) {
+                        fullName = university.fullName as string;
+                        description = university.name as string; // Using name as placeholder for description
+                        url = university.url as string;
+                    }
+                }
+
+                return {
+                    name: fullName,
+                    description: description,
+                    url: url,
+                    fullName: fullName,
+                    typeId: app._id.toString(),
+                    deadline: app.deadline,
+                    status: app.status,
+                    type: app.type,
+                    messages: ["Application fetched successfully"],
+                    succeeded: true,
+                    id: app.id
+                } as ApplicationOutput;
+            }));
+
+            return output;
+
+        } catch (error) {
+            return [{
+                messages: [`Failed to fetch applications: ${error.message}`],
+                succeeded: false,
+                id: null
+            }];
+        }
+    }
 }

@@ -1,4 +1,4 @@
-import { Authorized, Mutation, Arg, Ctx, Resolver } from "type-graphql";
+import { Authorized, Mutation, Arg, Ctx, Resolver, Query } from "type-graphql";
 import { Context } from "vm";
 import { ApplicationOutput, ApplicationInput } from "../schema/application/submit.application.js";
 import ApplicationService from "../services/application.service.js";
@@ -15,4 +15,9 @@ export default class ApplicationResolver {
         return this.applicationService.submitApplication(input, _id);
     }
 
+    @Authorized()
+    @Query(() => [ApplicationOutput])
+    async getApplications(@Arg("type") type: Number, @Ctx() { user: { _id } }: Context): Promise<ApplicationOutput[]> {
+        return this.applicationService.getApplications(_id, type);
+    }
 }
