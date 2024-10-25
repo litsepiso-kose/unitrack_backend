@@ -2,6 +2,8 @@ import { Field, InputType, ObjectType } from "type-graphql";
 
 @InputType()
 export class ApplicationInput {
+    @Field(() => String, { nullable: true })
+    id: String;
     @Field(() => String)
     name: String;
     @Field(() => String, { nullable: true })
@@ -13,15 +15,15 @@ export class ApplicationInput {
     @Field(() => String,)
     deadline: String;
     @Field(() => String, { nullable: true })
-    status: String;
+    status: Number;
     @Field(() => Number, { nullable: true })
     type: Number;
 }
 
 @ObjectType()
 export class ApplicationOutput {
-    @Field(() => String)
-    id: String;
+    @Field(() => String, { nullable: true })
+    id!: String;
 
     @Field(() => String, { nullable: true })
     name?: String;
@@ -31,9 +33,6 @@ export class ApplicationOutput {
 
     @Field(() => String, { nullable: true })
     url?: String;
-
-    @Field(() => String, { nullable: true })
-    fullName?: String;
 
     @Field(() => String, { nullable: true })
     typeId?: String;

@@ -17,7 +17,7 @@ export default class UniversityClass extends base_model {
     name: String;
 
     @prop({ type: String, required: true })
-    fullName: String;
+    description: String;
 
     @prop({ type: String, required: true })
     url: String;

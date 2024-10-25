@@ -12,12 +12,18 @@ export default class ApplicationResolver {
     @Authorized()
     @Mutation(() => ApplicationOutput)
     async saveApplication(@Arg("input") input: ApplicationInput, @Ctx() { user: { _id } }: Context): Promise<ApplicationOutput> {
-        return this.applicationService.submitApplication(input, _id);
+        return input.id ? this.applicationService.updateApplication(input) : this.applicationService.submitApplication(input, _id);
     }
 
     @Authorized()
     @Query(() => [ApplicationOutput])
     async getApplications(@Arg("type") type: Number, @Ctx() { user: { _id } }: Context): Promise<ApplicationOutput[]> {
         return this.applicationService.getApplications(_id, type);
+    }
+
+    @Authorized()
+    @Query(() => ApplicationOutput)
+    async getApplication(@Arg("id") id: String): Promise<ApplicationOutput> {
+        return this.applicationService.getApplication(id);
     }
 }
