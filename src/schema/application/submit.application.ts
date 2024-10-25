@@ -11,13 +11,11 @@ export class ApplicationInput {
     @Field(() => String, { nullable: true })
     fullName: String;
     @Field(() => String,)
-    typeId: String;
-    @Field(() => String,)
     deadline: String;
     @Field(() => String, { nullable: true })
     status: String;
-    @Field(() => String, { nullable: true })
-    type: "Bursary" | "University";
+    @Field(() => Number, { nullable: true })
+    type: Number;
 }
 
 @ObjectType()
@@ -40,13 +38,15 @@ export class ApplicationOutput {
     @Field(() => String, { nullable: true })
     deadline?: String;
 
-    @Field(() => String, { nullable: true })
-    status?: String;
+    @Field(() => Number, { nullable: true })
+    status?: Number;
 
-    @Field(() => String, { nullable: true })
-    type?: "Bursary" | "University";
+    @Field(() => Number, { nullable: true })
+    type?: Number;
 
     @Field(() => [String], { nullable: false })
     messages!: String[];
-}
 
+    @Field(() => Boolean,)
+    succeeded!: Boolean;
+}
