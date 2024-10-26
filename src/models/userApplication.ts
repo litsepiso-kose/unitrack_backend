@@ -25,3 +25,12 @@ export const UserApplicationModel = getModelForClass<
 >(UserApplication, {
     options: { customName: "UserApplication" },
 });
+
+export enum ApplicationStatus {
+    NotApplied = 0,
+    Applied = 1,
+    Pending = 2,
+    Accepted = 3,
+    Rejected = 4,
+    Delete = 5
+}

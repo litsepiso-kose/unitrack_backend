@@ -87,7 +87,6 @@ export async function addInitialData() {
     await addInitialDataParamed(data);
 }
 
-// Define the function to add initial data
 export async function addInitialDataParamed(array: Array<{
     name: string;
     description: string;
@@ -97,24 +96,31 @@ export async function addInitialDataParamed(array: Array<{
     apply_link: string;
 }>) {
     try {
-        for (const item of array) {
-            // Map "deadlines" to "deadline"
-            const deadline = item.deadlines || "Not specified";
+        // Check if there are already any documents in the database
+        const existingDataCount = await ApplicationDataModel.countDocuments();
 
-            // Create a new document using the ApplicationDataModel
-            const newData = new ApplicationDataModel({
-                name: item.name,
-                description: item.description,
-                type: item.type,
-                deadline: deadline,
-                courses: item.courses,
-                applyLink: item.apply_link,
-            });
+        // Only add initial data if the collection is empty
+        if (existingDataCount === 0) {
+            for (const item of array) {
+                const deadline = item.deadlines || "Not specified";
 
-            // Save the document to the database
-            await newData.save();
+                // Create a new document using the ApplicationDataModel
+                const newData = new ApplicationDataModel({
+                    name: item.name,
+                    description: item.description,
+                    type: item.type,
+                    deadline: deadline,
+                    courses: item.courses,
+                    applyLink: item.apply_link,
+                });
+
+                // Save the document to the database
+                await newData.save();
+            }
+            console.log("Initial data added successfully.");
+        } else {
+            console.log("Database already has data; initial data not added.");
         }
-        console.log("Initial data added successfully.");
     } catch (error) {
         console.error("Error adding initial data:", error);
     }

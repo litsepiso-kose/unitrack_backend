@@ -2,35 +2,29 @@ import { Field, InputType, ObjectType } from "type-graphql";
 
 @InputType()
 export class UserApplicationInput {
-    @Field(() => String, { nullable: true })
-    id: string;
-
-    @Field(() => String)
-    userId: string;
-
     @Field(() => String)
     applicationId: string;
 
     @Field(() => Number, { nullable: true })
-    status: number;
+    status?: number;
 }
 
 @ObjectType()
 export class UserApplicationOutput {
     @Field(() => String, { nullable: true })
-    id!: string;
+    id!: String;
 
     @Field(() => String)
-    userId!: string;
+    userId!: String;
 
     @Field(() => String)
-    applicationId!: string;
+    applicationId!: String;
 
     @Field(() => Number, { nullable: true })
     status?: number;
 
     @Field(() => [String], { nullable: false })
-    messages!: string[];
+    messages!: String[];
 
     @Field(() => Boolean)
     succeeded!: boolean;
