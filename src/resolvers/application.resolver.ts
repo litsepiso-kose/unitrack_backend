@@ -1,6 +1,5 @@
-import { Authorized, Mutation, Arg, Ctx, Resolver, Query } from "type-graphql";
-import { Context } from "vm";
-import { ApplicationOutput, ApplicationInput } from "../schema/application/submit.application.js";
+import { Authorized, Query, Resolver } from "type-graphql";
+import { ApplicationDataOutput } from "../schema/application/submit.application.js";
 import ApplicationService from "../services/application.service.js";
 
 @Resolver()
@@ -10,20 +9,8 @@ export default class ApplicationResolver {
     }
 
     @Authorized()
-    @Mutation(() => ApplicationOutput)
-    async saveApplication(@Arg("input") input: ApplicationInput, @Ctx() { user: { _id } }: Context): Promise<ApplicationOutput> {
-        return input.id ? this.applicationService.updateApplication(input) : this.applicationService.submitApplication(input, _id);
-    }
-
-    @Authorized()
-    @Query(() => [ApplicationOutput])
-    async getApplications(@Arg("type") type: Number, @Ctx() { user: { _id } }: Context): Promise<ApplicationOutput[]> {
-        return this.applicationService.getApplications(_id, type);
-    }
-
-    @Authorized()
-    @Query(() => ApplicationOutput)
-    async getApplication(@Arg("id",) id: String): Promise<ApplicationOutput> {
-        return this.applicationService.getApplication(id);
+    @Query(() => [ApplicationDataOutput])
+    async getAllApplications(): Promise<ApplicationDataOutput[]> {
+        return this.applicationService.getAllApplications();
     }
 }

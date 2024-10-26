@@ -1,154 +1,80 @@
-import ApplicationClass, { ApplicationModel, Statuses } from "../models/application.js";
-import { ApplicationInput, ApplicationOutput, } from "../schema/application/submit.application.js";
+import { ApplicationDataModel } from "../models/applicationData.js";
+import { UserApplicationModel } from "../models/userApplication.js";
+import { ApplicationDataOutput, UserApplicationInput, UserApplicationOutput } from "../schema/application/submit.application.js";
+
 
 export default class ApplicationService {
-    async updateApplication(input: ApplicationInput): Promise<ApplicationOutput> {
+    async updateApplication(input: UserApplicationInput): Promise<UserApplicationOutput> {
         try {
-            // Find the application by ID
-            const application = await ApplicationModel.findById(input.id);
-            if (!application) {
-                return {
-                    messages: ["Application not found"],
-                    succeeded: false,
-                    id: null
-                };
+            let userApplication;
+
+            if (input.id) {
+                // Find the existing application by ID
+                userApplication = await UserApplicationModel.findById(input.id);
+
+                if (userApplication) {
+                    // Update existing fields
+                    userApplication.status = input.status !== undefined ? input.status : userApplication.status;
+
+                    // Save the updated document
+                    await userApplication.save();
+                } else {
+                    // If no document found with the provided ID, create a new one
+                    userApplication = new UserApplicationModel({
+                        ...input,
+                        id: input.id,
+                    });
+                    await userApplication.save();
+                }
+            } else {
+                // If no ID provided, create a new UserApplication
+                userApplication = new UserApplicationModel({
+                    userId: input.userId,
+                    applicationId: input.applicationId,
+                    status: input.status || 0, // Default status if not provided
+                });
+                await userApplication.save();
             }
 
-            // Update application fields
-            application.deadline = input.deadline || application.deadline;
-            application.status = input.status || application.status;
-            application.name = input.name
-            application.url = input.url
-            application.description = input.description
-
-            // Return updated ApplicationOutput
             return {
-                name: input.name, // Assuming userId as a placeholder for name
-                description: application.description,
-                url: application.url,
-                typeId: application._id.toString(),
-                deadline: application.deadline,
-                status: application.status,
-                type: application.type,
-                messages: ["Application updated successfully"],
+                id: userApplication._id.toString(),
+                userId: userApplication.userId,
+                applicationId: userApplication.applicationId,
+                status: userApplication.status,
+                messages: ["Application saved or updated successfully"],
                 succeeded: true,
-                id: application.id
             };
-
         } catch (error) {
-            console.error("Error updating application:", error);
+            console.error("Error saving or updating application:", error);
             return {
-                messages: [`Failed to update application: ${error.message}`],
+                id: input.id || "",
+                userId: input.userId,
+                applicationId: input.applicationId,
+                status: input.status || 0,
+                messages: ["Error saving or updating application", error.message],
                 succeeded: false,
-                id: null
             };
         }
     }
 
-    async submitApplication(input: ApplicationInput, userId: String): Promise<ApplicationOutput> {
+    async getAllApplications(): Promise<ApplicationDataOutput[]> {
         try {
-            // First, create the application and save it to get its primary key (applicationId)
-            const newApplication: Partial<ApplicationClass> = {
-                userId: userId,
-                type: input.type,
-                deadline: input.deadline,
-                status: Statuses.Applied,
-                url: input.url,
-                name: input.name,
-                description: input.description
-            };
+            const applications = await ApplicationDataModel.find();
 
-            const savedApplication = await ApplicationModel.create(newApplication);
-
-            return {
-                name: input.name,
-                description: input.description,
-                url: input.url,
-                deadline: input.deadline,
-                status: Statuses.Applied,
-                type: input.type,
-                succeeded: true,
-                messages: ["Application saved successfully"],
-                id: savedApplication.id
-            };
-        } catch (error) {
-            console.error(error.message)
-            return {
-                succeeded: false,
-                messages: [`Failed to submit application `],
-                id: null
-            };
-        }
-    }
-
-    async getApplications(userId: string, type: Number): Promise<ApplicationOutput[]> {
-        try {
-            // Find applications that match the userId and type
-            const applications = await ApplicationModel.find({ userId: userId, type: type });
-
-            // Iterate over applications and fetch additional details from University or Bursary
-            const output = await Promise.all(applications.map(async (app) => {
-
-                return {
-                    name: app.name,
-                    description: app.description,
-                    url: app.url,
-                    typeId: app._id.toString(),
-                    deadline: app.deadline,
-                    status: app.status,
-                    type: app.type,
-                    messages: ["Application fetched successfully"],
-                    succeeded: true,
-                    id: app.id
-                } as ApplicationOutput;
+            return applications.map(app => ({
+                id: app._id.toString(),
+                name: app.name,
+                description: app.description,
+                type: app.type,
+                deadline: app.deadline,
+                courses: app.courses,
+                applyLink: app.applyLink,
+                messages: ["Application retrieved successfully"],
+                succeeded: true
             }));
-
-            return output;
-
         } catch (error) {
-            return [{
-                messages: [`Failed to fetch applications: ${error.message}`],
-                succeeded: false,
-                id: null
-            }];
+            console.error("Error retrieving applications:", error);
+            throw new Error("Failed to retrieve applications");
         }
     }
-
-    async getApplication(id: String): Promise<ApplicationOutput> {
-        try {
-            // Find the application by id
-            const application = await ApplicationModel.findById(id);
-
-            if (!application) {
-                return {
-                    messages: ["Application not found"],
-                    succeeded: false,
-                    id: null
-                };
-            }
-
-            // Create the output object to return
-            return {
-                name: application.name, // Assuming you may want to use userId as a placeholder for name
-                description: application.description,
-                url: application.url,
-                typeId: application._id.toString(),
-                deadline: application.deadline,
-                status: application.status,
-                type: application.type,
-                messages: ["Application fetched successfully"],
-                succeeded: true,
-                id: application.id
-            };
-
-        } catch (error) {
-            console.error("Error fetching application:", error);
-            return {
-                messages: [`Failed to fetch application: ${error.message}`],
-                succeeded: false,
-                id: null
-            };
-        }
-    }
-
 }

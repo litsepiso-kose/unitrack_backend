@@ -1,54 +1,67 @@
 import { Field, InputType, ObjectType } from "type-graphql";
 
 @InputType()
-export class ApplicationInput {
+export class UserApplicationInput {
     @Field(() => String, { nullable: true })
-    id: String;
+    id: string;
+
     @Field(() => String)
-    name: String;
-    @Field(() => String, { nullable: true })
-    description: String;
+    userId: string;
+
     @Field(() => String)
-    url: String;
-    @Field(() => String, { nullable: true })
-    fullName: String;
-    @Field(() => String,)
-    deadline: String;
-    @Field(() => String, { nullable: true })
-    status: Number;
+    applicationId: string;
+
     @Field(() => Number, { nullable: true })
-    type: Number;
+    status: number;
 }
 
 @ObjectType()
-export class ApplicationOutput {
+export class UserApplicationOutput {
     @Field(() => String, { nullable: true })
-    id!: String;
+    id!: string;
 
-    @Field(() => String, { nullable: true })
-    name?: String;
+    @Field(() => String)
+    userId!: string;
 
-    @Field(() => String, { nullable: true })
-    description?: String;
-
-    @Field(() => String, { nullable: true })
-    url?: String;
-
-    @Field(() => String, { nullable: true })
-    typeId?: String;
-
-    @Field(() => String, { nullable: true })
-    deadline?: String;
+    @Field(() => String)
+    applicationId!: string;
 
     @Field(() => Number, { nullable: true })
-    status?: Number;
-
-    @Field(() => Number, { nullable: true })
-    type?: Number;
+    status?: number;
 
     @Field(() => [String], { nullable: false })
-    messages!: String[];
+    messages!: string[];
 
-    @Field(() => Boolean,)
-    succeeded!: Boolean;
+    @Field(() => Boolean)
+    succeeded!: boolean;
+}
+
+@ObjectType()
+export class ApplicationDataOutput {
+    @Field(() => String)
+    name: string;
+
+    @Field(() => String)
+    id: string;
+
+    @Field(() => String)
+    description: string;
+
+    @Field(() => Number)
+    type: number;
+
+    @Field(() => String)
+    deadline: string;
+
+    @Field(() => [String], { nullable: true })
+    courses?: string[];
+
+    @Field(() => String)
+    applyLink: string;
+
+    @Field(() => [String], { nullable: false })
+    messages!: string[];
+
+    @Field(() => Boolean)
+    succeeded!: boolean;
 }
