@@ -23,7 +23,7 @@ export default class ApplicationResolver {
 
     @Authorized()
     @Query(() => ApplicationOutput)
-    async getApplication(@Arg("id") id: String): Promise<ApplicationOutput> {
+    async getApplication(@Arg("id",) id: String): Promise<ApplicationOutput> {
         return this.applicationService.getApplication(id);
     }
 }

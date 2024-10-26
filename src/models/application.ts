@@ -24,6 +24,15 @@ export default class ApplicationClass extends base_model {
 
     @prop({ type: Number, required: true })
     status: Number;
+
+    @prop({ type: String, required: true })
+    name: String;
+
+    @prop({ type: String, required: true })
+    description: String;
+
+    @prop({ type: String, required: true })
+    url: String;
 }
 
 export const ApplicationModel = getModelForClass<
@@ -32,11 +41,6 @@ export const ApplicationModel = getModelForClass<
 >(ApplicationClass, {
     options: { customName: "Application" },
 });
-
-export enum ApplicationType {
-    B,
-    U
-}
 
 export enum Statuses {
     Applied,

@@ -1,6 +1,4 @@
-import ApplicationClass, { ApplicationModel, ApplicationType, Statuses } from "../models/application.js";
-import BursaryClass, { BursaryModel } from "../models/bursary.js";
-import UniversityClass, { UniversityModel } from "../models/universtiy.js";
+import ApplicationClass, { ApplicationModel, Statuses } from "../models/application.js";
 import { ApplicationInput, ApplicationOutput, } from "../schema/application/submit.application.js";
 
 export default class ApplicationService {
@@ -19,45 +17,15 @@ export default class ApplicationService {
             // Update application fields
             application.deadline = input.deadline || application.deadline;
             application.status = input.status || application.status;
-
-            // Save the updated application
-            await application.save();
-
-            // Update associated Bursary or University based on application type
-            let description: String = "";
-            let url: String = "";
-
-            if (application.type === 0) { // Assuming type 0 is Bursary
-                const bursary = await BursaryModel.findOne({ applicationId: application._id });
-                if (bursary) {
-                    bursary.name = input.name || bursary.name;
-                    bursary.description = input.description || bursary.description;
-                    bursary.url = input.url || bursary.url;
-                    await bursary.save();
-
-                    description = bursary.description;
-                    url = bursary.url;
-                }
-            } else if (application.type === 1) { // Assuming type 1 is University
-                const university = await UniversityModel.findOne({ applicationId: application._id });
-                if (university) {
-                    university.description = input.fullName || university.description;
-                    university.name = input.name || university.name;
-                    university.url = input.url || university.url;
-                    await university.save();
-
-                    // Set output fields
-                    description = university.description;
-                    description = university.name; // Using name as a placeholder for description
-                    url = university.url;
-                }
-            }
+            application.name = input.name
+            application.url = input.url
+            application.description = input.description
 
             // Return updated ApplicationOutput
             return {
                 name: input.name, // Assuming userId as a placeholder for name
-                description: description,
-                url: url,
+                description: application.description,
+                url: application.url,
                 typeId: application._id.toString(),
                 deadline: application.deadline,
                 status: application.status,
@@ -84,60 +52,30 @@ export default class ApplicationService {
                 userId: userId,
                 type: input.type,
                 deadline: input.deadline,
-                status: Statuses.Applied, // Default to 'pending' if not provided
+                status: Statuses.Applied,
+                url: input.url,
+                name: input.name,
+                description: input.description
             };
 
-            // Save the application and retrieve its ID
             const savedApplication = await ApplicationModel.create(newApplication);
-            const applicationId = savedApplication._id;
 
-            // Based on the type, create and save a Bursary or University with applicationId as foreign key
-            if (input.type === ApplicationType.B) {
-                const newBursary: BursaryClass = {
-                    name: input.name,
-                    description: input.description,
-                    url: input.url,
-                    applicationId: applicationId, // Set the applicationId in Bursary
-                };
-                await BursaryModel.create(newBursary);
-            } else if (input.type === ApplicationType.U) {
-                const newUniversity: UniversityClass = {
-                    description: input.description,
-                    name: input.name,
-                    url: input.url,
-                    applicationId: applicationId, // Set the applicationId in University
-                };
-                await UniversityModel.create(newUniversity);
-            } else {
-                throw new Error("Invalid application type.");
-            }
-
-            // Update the application with the applicationId as typeId after saving Bursary/University
-            await ApplicationModel.findByIdAndUpdate(applicationId, { typeId: applicationId });
-
-            // Create the output object to return
-            let output: ApplicationOutput = new ApplicationOutput()
-
-            output = {
+            return {
                 name: input.name,
                 description: input.description,
                 url: input.url,
-                typeId: applicationId,
                 deadline: input.deadline,
-                status: savedApplication.status,
+                status: Statuses.Applied,
                 type: input.type,
                 succeeded: true,
                 messages: ["Application saved successfully"],
                 id: savedApplication.id
             };
-
-            return output;
-
         } catch (error) {
-            // Handle any errors and return error message
+            console.error(error.message)
             return {
                 succeeded: false,
-                messages: [`Failed to submit application: ${error.message}`],
+                messages: [`Failed to submit application `],
                 id: null
             };
         }
@@ -150,31 +88,11 @@ export default class ApplicationService {
 
             // Iterate over applications and fetch additional details from University or Bursary
             const output = await Promise.all(applications.map(async (app) => {
-                let fullName = "";
-                let description = "";
-                let url = "";
-
-                if (type === 0) { // Bursary type
-                    const bursary = await BursaryModel.findOne({ applicationId: app._id }).exec();
-                    if (bursary) {
-                        fullName = bursary.name as string;
-                        description = bursary.description as string;
-                        url = bursary.url as string;
-                    }
-                } else if (type === 1) { // University type
-                    const university = await UniversityModel.findOne({ applicationId: app._id }).exec();
-                    if (university) {
-                        description = university.description as string;
-                        description = university.name as string; // Using name as placeholder for description
-                        url = university.url as string;
-                    }
-                }
 
                 return {
-                    name: fullName,
-                    description: description,
-                    url: url,
-                    fullName: fullName,
+                    name: app.name,
+                    description: app.description,
+                    url: app.url,
                     typeId: app._id.toString(),
                     deadline: app.deadline,
                     status: app.status,
@@ -209,33 +127,11 @@ export default class ApplicationService {
                 };
             }
 
-            // Initialize output fields
-            let description: String = "";
-            let url: String = "";
-            let name: String = "";
-
-            // Check application type and retrieve relevant details from Bursary or University
-            if (application.type === 0) { // Assuming type 0 is Bursary
-                const bursary = await BursaryModel.findOne({ applicationId: application._id }).exec();
-                if (bursary) {
-                    description = bursary.description;
-                    url = bursary.url;
-                    name = bursary.name;
-                }
-            } else if (application.type === 1) { // Assuming type 1 is University
-                const university = await UniversityModel.findOne({ applicationId: application._id }).exec();
-                if (university) {
-                    description = university.name; // Using name as description placeholder
-                    url = university.url;
-                    name = university.name
-                }
-            }
-
             // Create the output object to return
             return {
-                name: name, // Assuming you may want to use userId as a placeholder for name
-                description: description,
-                url: url,
+                name: application.name, // Assuming you may want to use userId as a placeholder for name
+                description: application.description,
+                url: application.url,
                 typeId: application._id.toString(),
                 deadline: application.deadline,
                 status: application.status,
