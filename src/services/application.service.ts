@@ -131,6 +131,4 @@ export default class ApplicationService {
             throw new Error("Failed to retrieve applications");
         }
     }
-
-
 }
