@@ -22,8 +22,8 @@ export default class ApplicationData extends base_model {
     @prop({ type: Number, required: true, enum: [0, 1] })
     type: number; // 0 for bursary, 1 for university
 
-    @prop({ type: String, required: true })
-    deadline: string;
+    @prop({ type: Date, required: true })
+    deadline: Date;
 
     @prop({ type: [String], required: false })
     courses?: string[]; // Optional field for courses, only relevant for universities

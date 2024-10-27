@@ -70,6 +70,7 @@ export default class ApplicationService {
                 deadline: app.deadline,
                 courses: app.courses,
                 applyLink: app.applyLink,
+                status: 0,  // Default status if unavailable
                 messages: ["Application retrieved successfully"],
                 succeeded: true
             }));
@@ -99,18 +100,20 @@ export default class ApplicationService {
     async getUserApplications(type: Number, userId: String): Promise<ApplicationDataOutput[]> {
         try {
             // Step 1: Fetch UserApplications for the given user
-            const userApplications = await UserApplicationModel.find({ userId: userId });
+            const userApplications = await UserApplicationModel.find({ userId });
 
-            // Step 2: Extract applicationIds
-            const applicationIds = userApplications.map(app => app.applicationId);
+            // Step 2: Extract applicationIds and create a map of applicationId to status as numbers
+            const applicationIdStatusMap = new Map<string, number>(
+                userApplications.map(app => [app.applicationId.toString(), app.status as number])
+            );
 
             // Step 3: Query ApplicationData using applicationIds and filter by type
             const applications = await ApplicationDataModel.find({
-                _id: { $in: applicationIds },
-                type: type
+                _id: { $in: Array.from(applicationIdStatusMap.keys()) },
+                type
             });
 
-            // Step 4: Format the data to match ApplicationDataOutput
+            // Step 4: Format the data to match ApplicationDataOutput and include status as a number
             return applications.map(app => ({
                 id: app._id.toString(),
                 name: app.name,
@@ -119,6 +122,7 @@ export default class ApplicationService {
                 deadline: app.deadline,
                 courses: app.courses,
                 applyLink: app.applyLink,
+                status: applicationIdStatusMap.get(app._id.toString()) || 0,  // Default to 0 if undefined
                 messages: ["Application retrieved successfully"],
                 succeeded: true
             }));
@@ -127,4 +131,6 @@ export default class ApplicationService {
             throw new Error("Failed to retrieve applications");
         }
     }
+
+
 }

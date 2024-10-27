@@ -44,11 +44,14 @@ export class ApplicationDataOutput {
     @Field(() => Number)
     type: number;
 
-    @Field(() => String)
-    deadline: string;
+    @Field(() => Date)
+    deadline: Date;
 
     @Field(() => [String], { nullable: true })
     courses?: string[];
+
+    @Field(() => Number,)
+    status: Number;
 
     @Field(() => String)
     applyLink: string;

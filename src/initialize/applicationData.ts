@@ -5,7 +5,7 @@ const data = [
         "name": "Access Trust Bursary",
         "description": "Supports students at Western Cape TVET colleges, covering tuition and registration fees.",
         "type": 0,
-        "deadline": "November 30, 2024",
+        "deadline": new Date(),
         "courses": null,
         "apply_link": "https://accesstrust.org.za"
     },
@@ -13,7 +13,7 @@ const data = [
         "name": "CSIR Bursary",
         "description": "Funds full-time studies in science, engineering, and technology fields for South African students.",
         "type": 0,
-        "deadline": "December 31, 2024",
+        "deadline": new Date(),
         "courses": null,
         "apply_link": "https://www.csir.co.za/bursary-programme"
     },
@@ -21,7 +21,7 @@ const data = [
         "name": "MultiChoice Bursary",
         "description": "Provides bursaries to South African students pursuing media, film, and related fields.",
         "type": 0,
-        "deadline": "March 31, 2024",
+        "deadline": new Date(),
         "courses": null,
         "apply_link": "https://bursary.multichoice.com"
     },
@@ -29,7 +29,7 @@ const data = [
         "name": "University of Alberta Domestic Supplementary Bursary",
         "description": "Provides financial aid to Canadian students in need to cover living and tuition costs.",
         "type": 0,
-        "deadline": "December 15, 2024; April 15, 2025; June 15, 2025",
+        "deadline": new Date(),
         "courses": null,
         "apply_link": "https://www.ualberta.ca/financial-support/domestic-supplementary-bursary"
     },
@@ -37,7 +37,7 @@ const data = [
         "name": "Allan Gray Orbis Fellowship",
         "description": "Supports entrepreneurial-minded students in South Africa across multiple disciplines.",
         "type": 0,
-        "deadline": "April 30, 2024",
+        "deadline": new Date(),
         "courses": null,
         "apply_link": "https://www.allangrayorbis.org/fellowship/"
     },
@@ -45,7 +45,7 @@ const data = [
         "name": "University of Cape Town",
         "description": "A leading South African university offering various undergraduate and postgraduate programs.",
         "type": 1,
-        "deadline": "September 30, 2024",
+        "deadline": new Date(),
         "courses": ["Engineering", "Health Sciences", "Commerce", "Humanities", "Science"],
         "apply_link": "https://applyonline.uct.ac.za"
     },
@@ -53,7 +53,7 @@ const data = [
         "name": "University of Pretoria",
         "description": "Offers a wide range of programs with a focus on research and innovation.",
         "type": 1,
-        "deadline": "May 31, 2024",
+        "deadline": new Date(),
         "courses": ["Agricultural Sciences", "Law", "Engineering", "Education", "Medicine"],
         "apply_link": "https://www.up.ac.za/apply"
     },
@@ -61,7 +61,7 @@ const data = [
         "name": "University of Johannesburg",
         "description": "Known for practical and career-oriented programs in multiple fields.",
         "type": 1,
-        "deadline": "October 31, 2024",
+        "deadline": new Date(),
         "courses": ["Engineering", "Business Management", "Science", "Arts", "Humanities"],
         "apply_link": "https://www.uj.ac.za/admissions"
     },
@@ -69,7 +69,7 @@ const data = [
         "name": "University of Witwatersrand",
         "description": "Offers comprehensive programs and is known for its focus on innovation.",
         "type": 1,
-        "deadline": "August 31, 2024",
+        "deadline": new Date(),
         "courses": ["Architecture", "Medicine", "Engineering", "Humanities", "Law"],
         "apply_link": "https://www.wits.ac.za/applications"
     },
@@ -77,7 +77,7 @@ const data = [
         "name": "University of the Western Cape",
         "description": "A public university offering affordable, quality education in diverse fields.",
         "type": 1,
-        "deadline": "September 30, 2024",
+        "deadline": new Date(),
         "courses": ["Social Sciences", "Natural Sciences", "Dentistry", "Public Health", "Law"],
         "apply_link": "https://www.uwc.ac.za/apply"
     }
@@ -91,7 +91,7 @@ export async function addInitialDataParamed(array: Array<{
     name: string;
     description: string;
     type: number;
-    deadlines?: string;
+    deadline?: Date;
     courses?: string[];
     apply_link: string;
 }>) {
@@ -102,14 +102,13 @@ export async function addInitialDataParamed(array: Array<{
         // Only add initial data if the collection is empty
         if (existingDataCount === 0) {
             for (const item of array) {
-                const deadline = item.deadlines || "Not specified";
 
                 // Create a new document using the ApplicationDataModel
                 const newData = new ApplicationDataModel({
                     name: item.name,
                     description: item.description,
                     type: item.type,
-                    deadline: deadline,
+                    deadline: item.deadline,
                     courses: item.courses,
                     applyLink: item.apply_link,
                 });
