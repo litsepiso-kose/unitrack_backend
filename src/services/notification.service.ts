@@ -1,12 +1,12 @@
 import { ApplicationDataModel } from "../models/applicationData.js";
-import { NotificationModel } from "../models/notification.js";
+import { NotificationModel, NotificationStatus } from "../models/notification.js";
 import { NotificationOutput } from "../schema/notification/get.notifications.js";
 
 export default class NotificationService {
     async getAllNotifications(userId: String): Promise<NotificationOutput[]> {
         try {
             // Step 1: Retrieve all notifications for the specified user
-            const notifications = await NotificationModel.find({ userId });
+            const notifications = await NotificationModel.find({ userId, status: NotificationStatus.CREATED });
 
             // Step 2: Extract application IDs from notifications
             const applicationIds = notifications.map(notification => notification.applicationId);
@@ -46,6 +46,19 @@ export default class NotificationService {
                 messages: ["Failed to retrieve notifications"],
                 succeeded: false
             }];
+        }
+    }
+
+    async setNotificationStatusToREAD(id: String): Promise<boolean> {
+        try {
+            // Update the notification's status to 'READ'
+            await NotificationModel.findByIdAndUpdate(id, { status: NotificationStatus.READ });
+
+            // Return true if the notification was updated, false if not found
+            return true
+        } catch (error) {
+            console.error("Error setting notification status to READ:", error);
+            return false;
         }
     }
 }

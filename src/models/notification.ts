@@ -29,3 +29,8 @@ export const NotificationModel = getModelForClass<
 >(Notification, {
     options: { customName: "Notification" },
 });
+
+export enum NotificationStatus{
+    READ,
+    CREATED
+}

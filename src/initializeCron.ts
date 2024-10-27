@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { UserApplicationModel } from './models/userApplication.js';
-import { NotificationModel } from './models/notification.js';
+import { NotificationModel, NotificationStatus } from './models/notification.js';
 import { ApplicationDataModel } from './models/applicationData.js';
 
 async function checkDeadlines() {
@@ -27,7 +27,7 @@ async function checkDeadlines() {
                     await NotificationModel.create({
                         userId: userApp.userId,
                         applicationId: application._id,
-                        status: userApp.status
+                        status: NotificationStatus.CREATED
                     });
                 }
             }
